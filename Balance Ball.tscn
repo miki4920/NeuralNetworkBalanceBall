@@ -1,8 +1,4 @@
-[gd_scene load_steps=5 format=2]
-
-[sub_resource type="RectangleShape2D" id=1]
-
-[sub_resource type="CubeMesh" id=2]
+[gd_scene load_steps=6 format=2]
 
 [sub_resource type="CircleShape2D" id=3]
 
@@ -11,27 +7,57 @@ radius = 10.0
 height = 20.0
 rings = 64
 
+[sub_resource type="GDScript" id=7]
+resource_name = "Plane"
+script/source = "extends RigidBody2D
+
+var inputRotation: float = 0;
+const INPUT_ROTATION_CONSTANT = 0.0001;
+
+func get_input():
+	if Input.is_action_pressed(\"right\"):
+		inputRotation -= INPUT_ROTATION_CONSTANT;
+	elif Input.is_action_pressed(\"left\"):
+		inputRotation += INPUT_ROTATION_CONSTANT;
+	else:
+		inputRotation = 0;
+
+func _process(delta):
+	get_input();
+	rotate(inputRotation);
+"
+
+[sub_resource type="RectangleShape2D" id=5]
+
+[sub_resource type="CubeMesh" id=6]
+
 [node name="Balance Ball" type="Node2D"]
-
-[node name="Plane" type="StaticBody2D" parent="."]
-position = Vector2( 512, 300 )
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Plane"]
-scale = Vector2( 10, 0.5 )
-shape = SubResource( 1 )
-
-[node name="MeshInstance2D" type="MeshInstance2D" parent="Plane"]
-scale = Vector2( 100, 5 )
-mesh = SubResource( 2 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( 512, 300 )
 
-[node name="RigidBody2D" type="RigidBody2D" parent="."]
-position = Vector2( 512, 250 )
+[node name="Ball" type="RigidBody2D" parent="."]
+position = Vector2( 512, 200 )
+mass = 100.0
+gravity_scale = 30.98
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball"]
 shape = SubResource( 3 )
 
-[node name="MeshInstance2D" type="MeshInstance2D" parent="RigidBody2D"]
+[node name="MeshInstance2D" type="MeshInstance2D" parent="Ball"]
 mesh = SubResource( 4 )
+
+[node name="Plane" type="RigidBody2D" parent="."]
+position = Vector2( 512, 300 )
+scale = Vector2( 1, 2.5 )
+mode = 1
+gravity_scale = 0.0
+script = SubResource( 7 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plane"]
+scale = Vector2( 20, 1 )
+shape = SubResource( 5 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="Plane"]
+scale = Vector2( 200, 10 )
+mesh = SubResource( 6 )
